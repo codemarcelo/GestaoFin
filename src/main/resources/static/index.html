@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Aplicação</title>
+    <style>
+        /* Base Reset & Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+
+        /* ─── LOGIN ─── */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+
+        .login-logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+        .login-logo span {
+            color: #2563eb;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            color: #0f172a;
+            background: #f8fafc;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-login:hover {
+            background: #1e293b;
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        .login-error {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            color: #b91c1c;
+            font-size: 13px;
+            text-align: center;
+            display: none;
+        }
+
+        .login-credentials {
+            margin-top: 24px;
+            padding: 14px 16px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .login-credentials h4 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .credential-item {
+            margin-bottom: 4px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 12px;
+        }
+
+        /* ─── DASHBOARD SHELL ─── */
+        .app-shell {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .app-shell.visible {
+            display: flex;
+        }
+
+        .app-header {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 32px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.3px;
+        }
+        .app-logo span {
+            color: #2563eb;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            border-color: #b91c1c;
+            color: #b91c1c;
+            background: #fef2f2;
+        }
+
+        .app-nav {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 32px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .nav-tab {
+            padding: 14px 18px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: -1px;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: #0f172a;
+        }
+
+        .nav-tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .app-content {
+            flex: 1;
+            padding: 28px 32px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* ─── GASTOS ─── */
+        .gastos-header {
+            margin-bottom: 24px;
+        }
+
+        .gastos-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .gastos-header p {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .summary-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 22px 24px;
+            transition: box-shadow 0.2s;
+        }
+
+        .summary-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .summary-card.accent {
+            border-left: 3px solid #2563eb;
+        }
+        .summary-card.danger {
+            border-left: 3px solid #ef4444;
+        }
+        .summary-card.success {
+            border-left: 3px solid #10b981;
+        }
+        .summary-card.warning {
+            border-left: 3px solid #f59e0b;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f172a;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .summary-card.danger .summary-value {
+            color: #ef4444;
+        }
+
+        .form-panel {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 28px;
+        }
+
+        .form-panel h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            padding: 11px 22px;
+            background: #0f172a;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #1e293b;
+        }
+
+        .form-error {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            color: #b91c1c;
+            font-size: 13px;
+            display: none;
+        }
+
+        .gastos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .gasto-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .gasto-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            transform: translateY(-2px);
+        }
+
+        .gasto-head {
+            background: #0f172a;
+            color: #fff;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gasto-head h3 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .gasto-head-amount {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .gasto-body {
+            padding: 20px;
+        }
+
+        .gasto-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 10px;
+        }
+
+        .gasto-row strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .gasto-progress {
+            margin: 14px 0;
+        }
+
+        .progress-track {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #10b981;
+            border-radius: 999px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .gasto-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 14px;
+            font-size: 12px;
+        }
+
+        .gasto-footer .paid {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .gasto-footer .due {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .gasto-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 14px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-action {
+            padding: 9px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-action.mark {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+        .btn-action.mark:hover {
+            background: #dbeafe;
+        }
+
+        .btn-action.danger {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+        .btn-action.danger:hover {
+            background: #fee2e2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+            color: #94a3b8;
+            background: #ffffff;
+            border: 1.5px dashed #e2e8f0;
+            border-radius: 14px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .app-header, .app-content {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+            .gastos-grid {
+                grid-template-columns: 1fr;
+            }
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* GeFinho Assistant */
+        .gefinho-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .gefinho-toggle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a365d, #2d5a87);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(15, 39, 68, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .gefinho-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(15, 39, 68, 0.45);
+        }
+
+        .gefinho-panel {
+            position: absolute;
+            bottom: 68px;
+            right: 0;
+            width: 340px;
+            max-height: 520px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(15, 39, 68, 0.08);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .gefinho-panel.open {
+            display: flex;
+        }
+
+        .gefinho-header {
+            padding: 14px 16px;
+            background: #1a365d;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .gefinho-header strong {
+            font-size: 14px;
+        }
+
+        .gefinho-close {
+            background: transparent;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: .8;
+        }
+
+        .gefinho-close:hover {
+            opacity: 1;
+        }
+
+        .gefinho-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .gefinho-msg {
+            max-width: 82%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .gefinho-msg.bot {
+            align-self: flex-start;
+            background: #f8fafc;
+            color: #0f172a;
+            border-bottom-left-radius: 4px;
+        }
+
+        .gefinho-msg.user {
+            align-self: flex-end;
+            background: #2d5a87;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .gefinho-suggestions {
+            padding: 10px 12px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .gefinho-chip {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #0f172a;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .gefinho-chip:hover {
+            background: #f8fafc;
+        }
+
+        .gefinho-input-row {
+            padding: 10px 12px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 8px;
+        }
+
+        .gefinho-input-row input {
+            flex: 1;
+            padding: 9px 12px;
+            border-radius: 999px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #0f172a;
+            outline: none;
+        }
+
+        .gefinho-input-row button {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: #1a365d;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-wrapper">
+        <div class="login-card">
+            <div class="login-logo">Gestão<span>Fin</span></div>
+            <p class="login-subtitle">Controle financeiro com segurança</p>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Usuário</label>
+                    <input type="text" id="username" name="username" required placeholder="admin" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-login">Entrar</button>
+                <div class="login-error" id="error"></div>
+            </form>
+            <div class="login-credentials">
+                <h4>Ambiente de demonstração</h4>
+                <div class="credential-item">admin / senha123</div>
+                <div class="credential-item">usuario / senha456</div>
+                <div class="credential-item">demo / demo123</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Shell -->
+    <div id="appShell" class="app-shell">
+        <header class="app-header">
+            <div class="app-logo">Gestão<span>Fin</span></div>
+            <div class="header-actions">
+                <button class="btn-logout" onclick="handleLogout()">Sair</button>
+            </div>
+        </header>
+
+        <nav class="app-nav">
+            <button class="nav-tab active" data-tab="dashboard" onclick="switchTab('dashboard', this)">Dashboard</button>
+            <button class="nav-tab" data-tab="gastos" onclick="switchTab('gastos', this)">Meus gastos</button>
+        </nav>
+
+        <main class="app-content">
+            <!-- Dashboard -->
+            <section id="tab-dashboard" class="section active">
+                <div class="gastos-header">
+                    <h1>Visão geral</h1>
+                    <p>Acompanhe seus gastos e parcelas em um só lugar.</p>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-card accent">
+                        <div class="summary-label">Total de gastos</div>
+                        <p id="totalGastos" class="summary-value">0</p>
+                    </div>
+                    <div class="summary-card warning">
+                        <div class="summary-label">Valor total</div>
+                        <p id="totalDividido" class="summary-value">R$ 0,00</p>
+                    </div>
+                    <div class="summary-card success">
+                        <div class="summary-label">Valor pago</div>
+                        <p id="totalPago" class="summary-value">R$ 0,00</p>
+                    </div>
+                    <div class="summary-card danger">
+                        <div class="summary-label">Saldo devedor</div>
+                        <p id="totalRestante" class="summary-value">R$ 0,00</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gastos -->
+            <section id="tab-gastos" class="section">
+                <div class="gastos-header">
+                    <h1>Meus gastos</h1>
+                    <p>Registre novas compras e acompanhe o pagamento das parcelas.</p>
+                </div>
+
+                <div class="form-panel">
+                    <h2>Registrar novo gasto</h2>
+                    <form onsubmit="handleCriarGasto(event)">
+                        <div class="form-group">
+                            <label for="gastoTitulo">Descrição</label>
+                            <input type="text" id="gastoTitulo" required placeholder="Ex: Financiamento do veículo">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gastoValor">Valor do gasto (R$)</label>
+                                <input type="number" id="gastoValor" step="0.01" required placeholder="2500.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="gastoValorParcela">Valor de cada parcela (R$)</label>
+                                <input type="number" id="gastoValorParcela" step="0.01" required placeholder="239.58">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gastoParcelas">Quantidade de parcelas</label>
+                                <input type="number" id="gastoParcelas" min="1" required placeholder="24">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Registrar gasto</button>
+                        <div class="form-error" id="gastoError"></div>
+                    </form>
+                </div>
+
+                <div id="gastosList" class="gastos-grid"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- GeFinho Widget -->
+    <div id="gefinho-widget" class="gefinho-widget">
+        <div id="gefinhoPanel" class="gefinho-panel">
+            <div class="gefinho-header">
+                <strong>GeFinho</strong>
+                <button type="button" class="gefinho-close" onclick="toggleGeFinho()">×</button>
+            </div>
+            <div id="gefinhoMessages" class="gefinho-messages"></div>
+            <div id="gefinhoSuggestions" class="gefinho-suggestions"></div>
+            <div class="gefinho-input-row">
+                <input type="text" id="gefinhoInput" placeholder="Pergunte ao GeFinho..." onkeydown="if (event.key === 'Enter') enviarGeFinho()">
+                <button type="button" onclick="enviarGeFinho()">➤</button>
+            </div>
+        </div>
+        <button type="button" class="gefinho-toggle" onclick="toggleGeFinho()">GeFinho</button>
+    </div>
+
+    <script>
+        // GeFinho Assistant
+        function toggleGeFinho() {
+            const panel = document.getElementById('gefinhoPanel');
+            panel.classList.toggle('open');
+        }
+
+        function adicionarMensagemGeFinho(texto, isUser) {
+            const messages = document.getElementById('gefinhoMessages');
+            const msg = document.createElement('div');
+            msg.className = 'gefinho-msg ' + (isUser ? 'user' : 'bot');
+            msg.textContent = texto;
+            messages.appendChild(msg);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function processarGeFinho(pergunta) {
+            const p = pergunta.toLowerCase();
+            let resposta = '';
+
+            if (p.includes('oi') || p.includes('olá') || p.includes('hey')) {
+                resposta = 'Olá! Sou o GeFinho, seu assistente financeiro. Como posso ajudar você hoje?';
+            } else if (p.includes('gasto') && (p.includes('criar') || p.includes('novo') || p.includes('adicionar'))) {
+                resposta = 'Para criar um novo gasto, preencha o título, o valor total do gasto e o número de parcelas na seção "Meus Gastos". O sistema calculará automaticamente o valor de cada parcela e os juros.';
+            } else if (p.includes('parcela')) {
+                resposta = 'Você pode marcar parcelas como pagas diretamente nos cards de gastos, usando o botão "Marcar Parcela Paga". O progresso é atualizado automaticamente.';
+            } else if (p.includes('juros') || p.includes('juro')) {
+                resposta = 'Os juros são calculados automaticamente com base no valor da parcela e no valor original do gasto. O percentual de juros aparece no card quando há incidência.';
+            } else if (p.includes('resumo') || p.includes('dashboard')) {
+                resposta = 'O dashboard mostra o total de gastos, valor total, valor pago e saldo devedor. Acesse pelo menu superior.';
+            } else if (p.includes('login') || p.includes('senha') || p.includes('entrar')) {
+                resposta = 'Use as credenciais exibidas na tela de login: admin/senha123, usuario/senha456 ou demo/demo123.';
+            } else if (p.includes('ajuda') || p.includes('help')) {
+                resposta = 'Posso ajudar com: criação de gastos, acompanhamento de parcelas, cálculo de juros e navegação pelo sistema. O que você precisa?';
+            } else {
+                resposta = 'Não entendi sua pergunta. Tente perguntar sobre: gastos, parcelas, juros, dashboard ou login.';
+            }
+
+            return resposta;
+        }
+
+        function mostrarSugestoesGeFinho() {
+            const sugestoes = [
+                'Como criar um gasto?',
+                'Como funcionam os juros?',
+                'O que é o dashboard?',
+                'Como marcar parcela paga?'
+            ];
+            const container = document.getElementById('gefinhoSuggestions');
+            container.innerHTML = '';
+            sugestoes.forEach(texto => {
+                const chip = document.createElement('button');
+                chip.className = 'gefinho-chip';
+                chip.textContent = texto;
+                chip.onclick = () => {
+                    adicionarMensagemGeFinho(texto, true);
+                    const resposta = processarGeFinho(texto);
+                    setTimeout(() => adicionarMensagemGeFinho(resposta, false), 400);
+                    container.innerHTML = '';
+                };
+                container.appendChild(chip);
+            });
+        }
+
+        function enviarGeFinho() {
+            const input = document.getElementById('gefinhoInput');
+            const pergunta = input.value.trim();
+            if (!pergunta) return;
+
+            adicionarMensagemGeFinho(pergunta, true);
+            input.value = '';
+
+            const resposta = processarGeFinho(pergunta);
+            setTimeout(() => {
+                adicionarMensagemGeFinho(resposta, false);
+                mostrarSugestoesGeFinho();
+            }, 400);
+        }
+
+        // Initialize GeFinho
+        mostrarSugestoesGeFinho();
+
+        // App logic
+        const loginScreen = document.getElementById('loginScreen');
+        const appShell = document.getElementById('appShell');
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            if (tabId === 'gastos') {
+                carregarGastos();
+                carregarResumo();
+            } else if (tabId === 'dashboard') {
+                carregarResumo();
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('error');
+
+            errorEl.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('username', data.username);
+                    localStorage.setItem('fullName', data.fullName);
+                    loginScreen.style.display = 'none';
+                    appShell.classList.add('visible');
+                    carregarResumo();
+                } else {
+                    errorEl.textContent = data.message || 'Credenciais inválidas';
+                    errorEl.style.display = 'block';
+                }
+            } catch (err) {
+                errorEl.textContent = 'Erro ao conectar com o servidor';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        async function loadDashboard() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+
+            const response = await fetch('/api/dashboard/welcome', {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+
+            if (response.ok) {
+                loginScreen.style.display = 'none';
+                appShell.classList.add('visible');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.clear();
+            appShell.classList.remove('visible');
+            loginScreen.style.display = 'flex';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('error').style.display = 'none';
+        }
+
+        async function handleCriarGasto(event) {
+            event.preventDefault();
+
+            const token = localStorage.getItem('authToken');
+            const titulo = document.getElementById('gastoTitulo').value;
+            const valor = parseFloat(document.getElementById('gastoValor').value);
+            const valorParcela = parseFloat(document.getElementById('gastoValorParcela').value);
+            const totalParcelas = parseInt(document.getElementById('gastoParcelas').value);
+            const errorDiv = document.getElementById('gastoError');
+
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/gastos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ titulo, valor, valorParcela, totalParcelas })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('gastoTitulo').value = '';
+                    document.getElementById('gastoValor').value = '';
+                    document.getElementById('gastoValorParcela').value = '';
+                    document.getElementById('gastoParcelas').value = '';
+                    carregarGastos();
+                    carregarResumo();
+                } else {
+                    errorDiv.textContent = data.message || data.error || 'Erro ao registrar gasto';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Erro ao conectar com o servidor';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        async function carregarGastos() {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch('/api/gastos', {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+
+            const gastos = await response.json();
+            if (response.ok) renderGastos(gastos);
+        }
+
+        async function carregarResumo() {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch('/api/gastos/resumo', {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+
+            const resumo = await response.json();
+            if (response.ok) {
+                document.getElementById('totalGastos').textContent = resumo.totalGastos;
+                document.getElementById('totalDividido').textContent = 'R$ ' + formatarValor(resumo.totalDividido);
+                document.getElementById('totalPago').textContent = 'R$ ' + formatarValor(resumo.totalPago);
+                document.getElementById('totalRestante').textContent = 'R$ ' + formatarValor(resumo.totalRestante);
+            }
+        }
+
+        function renderGastos(gastos) {
+            const container = document.getElementById('gastosList');
+
+            if (!gastos || gastos.length === 0) {
+                container.innerHTML = '<div class="empty-state">Nenhum gasto registrado</div>';
+                return;
+            }
+
+            container.innerHTML = gastos.map(gasto => `
+                <div class="gasto-card">
+                    <div class="gasto-head">
+                        <h3>${gasto.titulo}</h3>
+                        <span class="gasto-head-amount">R$ ${formatarValor(gasto.valor)}</span>
+                    </div>
+                    <div class="gasto-body">
+                        <div class="gasto-row">
+                            <span>Parcelas: <strong>${gasto.parcelasPagas}/${gasto.totalParcelas}</strong></span>
+                            <span>Restam: <strong>${gasto.parcelasRestantes}</strong></span>
+                        </div>
+                        <div class="gasto-progress">
+                            <div class="progress-track">
+                                <div class="progress-bar" style="width: ${gasto.percentualPago}%"></div>
+                            </div>
+                            <div class="progress-text">${gasto.percentualPago.toFixed(1)}% pago</div>
+                        </div>
+                        <div class="gasto-footer">
+                            <span class="paid">Pago: R$ ${formatarValor(gasto.valorPago)}</span>
+                            <span class="due">Devedor: R$ ${formatarValor(gasto.valorRestante)}</span>
+                        </div>
+                    </div>
+                    <div class="gasto-actions">
+                        <button class="btn-action mark" onclick="atualizarParcelas(${gasto.id}, ${gasto.parcelasPagas + 1})">Marcar parcela paga</button>
+                        <button class="btn-action danger" onclick="deletarGasto(${gasto.id})">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function atualizarParcelas(gastoId, novasParcelas) {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`/api/gastos/${gastoId}/parcelas`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ parcelasPagas: novasParcelas })
+            });
+
+            if (response.ok) {
+                carregarGastos();
+                carregarResumo();
+            }
+        }
+
+        async function deletarGasto(gastoId) {
+            if (!confirm('Tem certeza que deseja excluir este gasto?')) return;
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`/api/gastos/${gastoId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+
+            if (response.ok) {
+                carregarGastos();
+                carregarResumo();
+            }
+        }
+
+        function formatarValor(valor) {
+            if (!valor && valor !== 0) return '0,00';
+            return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        window.addEventListener('load', function() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                loginScreen.style.display = 'none';
+                appShell.classList.add('visible');
+                carregarResumo();
+            }
+        });
+    </script>
+</body>
+</html>
