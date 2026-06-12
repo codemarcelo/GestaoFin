@@ -45,6 +45,23 @@ public class GastoService {
         BigDecimal valorComJuros = valorParcela.multiply(new BigDecimal(totalParcelas));
         BigDecimal jurosTotal = valorComJuros.subtract(valorGasto);
 
+        LocalDate dataVencimentoInicio = LocalDate.now();
+        if (request.getDataVencimentoInicio() != null && !request.getDataVencimentoInicio().trim().isEmpty()) {
+            try {
+                dataVencimentoInicio = LocalDate.parse(request.getDataVencimentoInicio());
+            } catch (Exception e) {
+                throw new BadRequestException("Formato de data de vencimento inválido. Use yyyy-MM-dd");
+            }
+        }
+
+        Integer parcelasPagas = 0;
+        if (request.getParcelasPagas() != null) {
+            parcelasPagas = request.getParcelasPagas();
+            if (parcelasPagas < 0 || parcelasPagas > totalParcelas) {
+                throw new BadRequestException("Quantidade de parcelas pagas deve estar entre 0 e " + totalParcelas);
+            }
+        }
+
         Gasto gasto = new Gasto();
         gasto.setUserId(userId);
         gasto.setTitulo(request.getTitulo());
@@ -53,7 +70,8 @@ public class GastoService {
         gasto.setJurosTotal(jurosTotal);
         gasto.setValorComJuros(valorComJuros);
         gasto.setTotalParcelas(totalParcelas);
-        gasto.setParcelasPagas(0);
+        gasto.setParcelasPagas(parcelasPagas);
+        gasto.setDataVencimentoInicio(dataVencimentoInicio);
 
         Gasto salvo = gastoRepository.save(gasto);
         return convertToResponse(salvo);
@@ -137,7 +155,10 @@ public class GastoService {
                 percentualJuros,
                 gasto.getPercentualPago(),
                 gasto.getDataCriacao(),
-                gasto.getStatus()
+                gasto.getStatus(),
+                gasto.getDataVencimentoInicio(),
+                gasto.getDataVencimentoFim(),
+                gasto.getStatusPagamento()
         );
     }
 }

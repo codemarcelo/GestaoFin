@@ -16,15 +16,18 @@ public class GastoRepository {
     static {
         gastos.put(1L, new Gasto(1L, 1L, "Financiamento Carro",
             new BigDecimal("25000.00"), new BigDecimal("33500.00"), new BigDecimal("558.33"),
-            new BigDecimal("8500.00"), 60, 12, LocalDate.now().minusMonths(1), "ATIVO"));
+            new BigDecimal("8500.00"), 60, 12, LocalDate.now().minusMonths(1), "ATIVO",
+            LocalDate.now().minusMonths(12)));
 
         gastos.put(2L, new Gasto(2L, 1L, "Empréstimo Pessoal",
             new BigDecimal("5000.00"), new BigDecimal("5750.00"), new BigDecimal("239.58"),
-            new BigDecimal("750.00"), 24, 5, LocalDate.now().minusMonths(2), "ATIVO"));
+            new BigDecimal("750.00"), 24, 5, LocalDate.now().minusMonths(2), "ATIVO",
+            LocalDate.now().minusMonths(5)));
 
         gastos.put(3L, new Gasto(3L, 1L, "Cartão de Crédito",
             new BigDecimal("3500.00"), new BigDecimal("3500.00"), new BigDecimal("3500.00"),
-            BigDecimal.ZERO, 1, 0, LocalDate.now(), "ATIVO"));
+            BigDecimal.ZERO, 1, 0, LocalDate.now(), "ATIVO",
+            LocalDate.now()));
 
         nextId = 4L;
     }

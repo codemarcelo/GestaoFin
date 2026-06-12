@@ -7,14 +7,34 @@ public class CreateGastoRequest {
     private BigDecimal valor;
     private BigDecimal valorParcela;
     private Integer totalParcelas;
+    private String dataVencimentoInicio; // Recebido como String (yyyy-MM-dd)
+    private Integer parcelasPagas; // Recebido opcionalmente para gastos em andamento
 
     public CreateGastoRequest() {}
 
-    public CreateGastoRequest(String titulo, BigDecimal valor, BigDecimal valorParcela, Integer totalParcelas) {
+    public CreateGastoRequest(String titulo, BigDecimal valor, BigDecimal valorParcela, Integer totalParcelas, String dataVencimentoInicio, Integer parcelasPagas) {
         this.titulo = titulo;
         this.valor = valor;
         this.valorParcela = valorParcela;
         this.totalParcelas = totalParcelas;
+        this.dataVencimentoInicio = dataVencimentoInicio;
+        this.parcelasPagas = parcelasPagas;
+    }
+
+    public String getDataVencimentoInicio() {
+        return dataVencimentoInicio;
+    }
+
+    public void setDataVencimentoInicio(String dataVencimentoInicio) {
+        this.dataVencimentoInicio = dataVencimentoInicio;
+    }
+
+    public Integer getParcelasPagas() {
+        return parcelasPagas;
+    }
+
+    public void setParcelasPagas(Integer parcelasPagas) {
+        this.parcelasPagas = parcelasPagas;
     }
 
     public String getTitulo() {

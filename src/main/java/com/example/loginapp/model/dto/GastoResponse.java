@@ -23,6 +23,9 @@ public class GastoResponse {
     private Double percentualPago;
     private LocalDate dataCriacao;
     private String status;
+    private LocalDate dataVencimentoInicio;
+    private LocalDate dataVencimentoFim;
+    private String statusPagamento;
 
     public GastoResponse() {}
 
@@ -30,7 +33,8 @@ public class GastoResponse {
                         BigDecimal valorParcela, BigDecimal jurosPorParcela, Integer totalParcelas, 
                         Integer parcelasPagas, Integer parcelasRestantes, BigDecimal valorPago, 
                         BigDecimal valorRestante, BigDecimal percentualJuros, Double percentualPago, 
-                        LocalDate dataCriacao, String status) {
+                        LocalDate dataCriacao, String status, LocalDate dataVencimentoInicio,
+                        LocalDate dataVencimentoFim, String statusPagamento) {
         this.id = id;
         this.titulo = titulo;
         this.valor = valor;
@@ -47,6 +51,9 @@ public class GastoResponse {
         this.percentualPago = percentualPago;
         this.dataCriacao = dataCriacao;
         this.status = status;
+        this.dataVencimentoInicio = dataVencimentoInicio;
+        this.dataVencimentoFim = dataVencimentoFim;
+        this.statusPagamento = statusPagamento;
     }
 
     // Getters e Setters
@@ -97,5 +104,14 @@ public class GastoResponse {
     
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public LocalDate getDataVencimentoInicio() { return dataVencimentoInicio; }
+    public void setDataVencimentoInicio(LocalDate dataVencimentoInicio) { this.dataVencimentoInicio = dataVencimentoInicio; }
+
+    public LocalDate getDataVencimentoFim() { return dataVencimentoFim; }
+    public void setDataVencimentoFim(LocalDate dataVencimentoFim) { this.dataVencimentoFim = dataVencimentoFim; }
+
+    public String getStatusPagamento() { return statusPagamento; }
+    public void setStatusPagamento(String statusPagamento) { this.statusPagamento = statusPagamento; }
 }
 

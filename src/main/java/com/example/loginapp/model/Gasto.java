@@ -18,11 +18,14 @@ public class Gasto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataCriacao;
     private String status; // ATIVO, PAGO, CANCELADO
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dataVencimentoInicio;
 
     public Gasto() {}
 
     public Gasto(Long id, Long userId, String titulo, BigDecimal valor, BigDecimal valorComJuros, BigDecimal valorParcela,
-                 BigDecimal jurosTotal, Integer totalParcelas, Integer parcelasPagas, LocalDate dataCriacao, String status) {
+                 BigDecimal jurosTotal, Integer totalParcelas, Integer parcelasPagas, LocalDate dataCriacao, String status,
+                 LocalDate dataVencimentoInicio) {
         this.id = id;
         this.userId = userId;
         this.titulo = titulo;
@@ -34,6 +37,7 @@ public class Gasto {
         this.parcelasPagas = parcelasPagas;
         this.dataCriacao = dataCriacao;
         this.status = status;
+        this.dataVencimentoInicio = dataVencimentoInicio;
     }
 
     // Getters e Setters
@@ -125,7 +129,48 @@ public class Gasto {
         this.status = status;
     }
 
+    public LocalDate getDataVencimentoInicio() {
+        return dataVencimentoInicio;
+    }
+
+    public void setDataVencimentoInicio(LocalDate dataVencimentoInicio) {
+        this.dataVencimentoInicio = dataVencimentoInicio;
+    }
+
     // Métodos de negócio
+    public LocalDate getDataVencimentoFim() {
+        if (dataVencimentoInicio == null || totalParcelas == null || totalParcelas <= 1) {
+            return dataVencimentoInicio;
+        }
+        return dataVencimentoInicio.plusMonths(totalParcelas - 1);
+    }
+
+    public String getStatusPagamento() {
+        if (parcelasPagas != null && totalParcelas != null && parcelasPagas.equals(totalParcelas)) {
+            return "Quitado";
+        }
+
+        if (dataVencimentoInicio == null) {
+            return "Em dia";
+        }
+
+        LocalDate hoje = LocalDate.now();
+        int expectedPaid = 0;
+        for (int i = 0; i < totalParcelas; i++) {
+            LocalDate vencimentoParcela = dataVencimentoInicio.plusMonths(i);
+            if (!vencimentoParcela.isAfter(hoje)) {
+                expectedPaid++;
+            } else {
+                break;
+            }
+        }
+
+        if (parcelasPagas < expectedPaid) {
+            return "Em atraso";
+        }
+        return "Em dia";
+    }
+
     public Integer getParcelasRestantes() {
         return totalParcelas - parcelasPagas;
     }
