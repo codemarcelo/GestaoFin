@@ -2,6 +2,7 @@ package com.example.loginapp.controller;
 
 import com.example.loginapp.model.dto.LoginRequest;
 import com.example.loginapp.model.dto.LoginResponse;
+import com.example.loginapp.model.dto.RegisterUserRequest;
 import com.example.loginapp.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,18 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<LoginResponse> register(@RequestBody RegisterUserRequest request) {
+        try {
+            LoginResponse response = authService.register(request);
+            return ResponseEntity.status(201).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    new LoginResponse(null, null, null, "Erro: " + e.getMessage())
+            );
+        }
+    }
+
     @GetMapping("/ping")
     public ResponseEntity<?> ping() {
         return ResponseEntity.ok(new Object() {
@@ -34,4 +47,3 @@ public class AuthController {
         });
     }
 }
-

@@ -38,8 +38,19 @@ public class GastoRepository {
                 .collect(Collectors.toList());
     }
 
+    public long countByUserId(Long userId) {
+        return gastos.values().stream()
+                .filter(g -> g.getUserId().equals(userId) && "ATIVO".equals(g.getStatus()))
+                .count();
+    }
+
     public Optional<Gasto> findById(Long id) {
         return Optional.ofNullable(gastos.get(id));
+    }
+
+    public Optional<Gasto> findByIdAndUserId(Long id, Long userId) {
+        return findById(id)
+                .filter(gasto -> userId.equals(gasto.getUserId()));
     }
 
     public Gasto save(Gasto gasto) {
@@ -58,6 +69,15 @@ public class GastoRepository {
         if (gasto.isPresent()) {
             gasto.get().setStatus("CANCELADO");
         }
+    }
+
+    public boolean deleteForUser(Long id, Long userId) {
+        Optional<Gasto> gasto = findByIdAndUserId(id, userId);
+        if (gasto.isPresent()) {
+            gasto.get().setStatus("CANCELADO");
+            return true;
+        }
+        return false;
     }
 
     public void update(Long id, Gasto gastoAtualizado) {

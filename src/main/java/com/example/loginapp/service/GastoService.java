@@ -1,8 +1,10 @@
 package com.example.loginapp.service;
 
 import com.example.loginapp.exception.BadRequestException;
+import com.example.loginapp.exception.ForbiddenException;
 import com.example.loginapp.exception.ResourceNotFoundException;
 import com.example.loginapp.model.Gasto;
+import com.example.loginapp.model.UserRole;
 import com.example.loginapp.model.dto.CreateGastoRequest;
 import com.example.loginapp.model.dto.GastoResponse;
 import com.example.loginapp.model.dto.GastoSummaryResponse;
@@ -29,7 +31,11 @@ public class GastoService {
                 .collect(Collectors.toList());
     }
 
-    public GastoResponse criarGasto(Long userId, CreateGastoRequest request) {
+    public GastoResponse criarGasto(Long userId, CreateGastoRequest request, UserRole role) {
+        if (role == UserRole.BASIC && gastoRepository.countByUserId(userId) >= 10) {
+            throw new ForbiddenException("Perfil Básico permite no máximo 10 registros de gastos ativos.");
+        }
+
         BigDecimal valorParcela = request.getValorParcela();
         Integer totalParcelas = request.getTotalParcelas();
         BigDecimal valorGasto = request.getValor();
@@ -77,9 +83,13 @@ public class GastoService {
         return convertToResponse(salvo);
     }
 
-    public GastoResponse atualizarParcelasPagas(Long gastoId, Integer parcelasPagas) {
-        Gasto gasto = gastoRepository.findById(gastoId)
+    public GastoResponse atualizarParcelasPagas(Long userId, Long gastoId, Integer parcelasPagas) {
+        Gasto gasto = gastoRepository.findByIdAndUserId(gastoId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado"));
+
+        if (parcelasPagas == null || parcelasPagas < 0) {
+            throw new BadRequestException("Número de parcelas pagas deve ser maior ou igual a zero");
+        }
 
         if (parcelasPagas > gasto.getTotalParcelas()) {
             throw new BadRequestException("Número de parcelas pagas não pode ultrapassar o total de parcelas!");
@@ -91,8 +101,8 @@ public class GastoService {
         return convertToResponse(gasto);
     }
 
-    public GastoResponse desmarcarParcela(Long gastoId) {
-        Gasto gasto = gastoRepository.findById(gastoId)
+    public GastoResponse desmarcarParcela(Long userId, Long gastoId) {
+        Gasto gasto = gastoRepository.findByIdAndUserId(gastoId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado"));
 
         if (gasto.getParcelasPagas() > 0) {
@@ -103,8 +113,10 @@ public class GastoService {
         return convertToResponse(gasto);
     }
 
-    public void deletarGasto(Long gastoId) {
-        gastoRepository.delete(gastoId);
+    public void deletarGasto(Long userId, Long gastoId) {
+        if (!gastoRepository.deleteForUser(gastoId, userId)) {
+            throw new ResourceNotFoundException("Gasto não encontrado");
+        }
     }
 
     public GastoSummaryResponse obterResumo(Long userId) {

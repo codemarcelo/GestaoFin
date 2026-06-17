@@ -1,13 +1,13 @@
 package com.example.loginapp.controller;
 
-import com.example.loginapp.model.User;
+import com.example.loginapp.model.dto.UserProfileResponse;
 import com.example.loginapp.service.AuthService;
-import com.example.loginapp.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -18,18 +18,16 @@ public class DashboardController {
     private AuthService authService;
 
     @GetMapping("/welcome")
-    public ResponseEntity<?> welcome() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+    public ResponseEntity<?> welcome(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            User user = authService.getUserByUsername(username);
+            UserProfileResponse user = authService.getProfile(authentication.getName());
 
             return ResponseEntity.ok(new Object() {
                 public String message = "🎉 Login realizado com sucesso!";
                 public String username = user.getUsername();
                 public String fullName = user.getFullName();
                 public String email = user.getEmail();
+                public String role = user.getRole().name();
             });
         }
 
@@ -41,20 +39,18 @@ public class DashboardController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<?> getProfile() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+    public ResponseEntity<UserProfileResponse> getProfile(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            User user = authService.getUserByUsername(username);
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(authService.getProfile(authentication.getName()));
         }
 
-        return ResponseEntity.status(401).body(
-                new Object() {
-                    public String message = "Não autenticado";
-                }
-        );
+        return ResponseEntity.status(401).build();
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<UserProfileResponse> updateProfile(
+            Authentication authentication,
+            @RequestBody com.example.loginapp.model.dto.UpdateUserProfileRequest request) {
+        return ResponseEntity.ok(authService.updateProfile(authentication.getName(), request));
     }
 }
-

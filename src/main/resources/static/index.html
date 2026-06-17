@@ -1267,6 +1267,117 @@
             background: #0f172a !important;
             border-color: #1e293b !important;
         }
+
+        .login-switch-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 18px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .text-link {
+            border: none;
+            background: transparent;
+            color: #2563eb;
+            cursor: pointer;
+            font-weight: 700;
+            padding: 0;
+        }
+
+        .register-step {
+            display: none;
+        }
+
+        .register-step.active {
+            display: block;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn-secondary {
+            padding: 11px 18px;
+            background: #e2e8f0;
+            color: #0f172a;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .password-rules {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            color: #475569;
+            font-size: 12px;
+            display: none;
+        }
+
+        .password-rules ul {
+            margin: 6px 0 0 18px;
+            padding: 0;
+        }
+
+        .profile-grid,
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .user-table th,
+        .user-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .user-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .limit-banner {
+            display: none;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
     </style>
 </head>
 <body>
@@ -1275,7 +1386,8 @@
         <div class="login-card">
             <div class="login-logo">Gestão<span>Fin</span></div>
             <p class="login-subtitle">Controle financeiro com segurança</p>
-            <form onsubmit="handleLogin(event)">
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label for="username">Usuário</label>
                     <input type="text" id="username" name="username" required placeholder="admin" autocomplete="username">
@@ -1287,6 +1399,62 @@
                 <button type="submit" class="btn-login">Entrar</button>
                 <div class="login-error" id="error"></div>
             </form>
+
+            <div class="login-switch-row">
+                <span>Não tem conta?</span>
+                <button type="button" class="text-link" onclick="showRegister()">Criar conta</button>
+            </div>
+
+            <form id="registerForm" onsubmit="handleRegister(event)" style="display: none;">
+                <div id="registerStep1" class="register-step active">
+                    <div class="form-group">
+                        <label for="registerFirstName">Nome</label>
+                        <input type="text" id="registerFirstName" required placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerLastName">Sobrenome</label>
+                        <input type="text" id="registerLastName" required placeholder="Seu sobrenome">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerCpf">CPF</label>
+                        <input type="text" id="registerCpf" required placeholder="000.000.000-00" maxlength="14" oninput="maskCpf(this)">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPhone">Telefone</label>
+                        <input type="text" id="registerPhone" required placeholder="(00) 00000-0000" maxlength="15" oninput="maskPhone(this)">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">E-mail</label>
+                        <input type="email" id="registerEmail" required placeholder="nome@email.com">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="showLogin()">Voltar</button>
+                        <button type="button" class="btn-primary" onclick="goRegisterStep2()">Avançar</button>
+                    </div>
+                    <div class="login-error" id="registerStep1Error"></div>
+                </div>
+
+                <div id="registerStep2" class="register-step">
+                    <div class="form-group">
+                        <label for="registerUsername">Login</label>
+                        <input type="text" id="registerUsername" required placeholder="usuario" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Senha</label>
+                        <input type="password" id="registerPassword" required placeholder="Senha segura" autocomplete="new-password" oninput="validatePasswordFrontend()">
+                    </div>
+                    <div class="password-rules" id="passwordRules">
+                        <strong>Regras da senha:</strong>
+                        <ul id="passwordRulesList"></ul>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="showRegisterStep1()">Voltar</button>
+                        <button type="submit" class="btn-primary">Criar conta</button>
+                    </div>
+                    <div class="login-error" id="registerStep2Error"></div>
+                </div>
+            </form>
+
             <div class="login-credentials">
                 <h4>Ambiente de demonstração</h4>
                 <div class="credential-item">admin / senha123</div>
@@ -1309,6 +1477,7 @@
             <div class="user-info">
                 <h4 id="userFullName">Usuário</h4>
                 <span id="userUsername">@usuario</span>
+                <span id="userRole" class="role-badge" style="margin-top: 6px; width: fit-content;">BASIC</span>
             </div>
         </div>
 
@@ -1324,6 +1493,14 @@
             <button class="menu-item" data-tab="historico" onclick="navigateTo('historico', this)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; vertical-align:middle;"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Histórico
+            </button>
+            <button class="menu-item" id="menuAccount" data-tab="conta" onclick="navigateTo('conta', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; vertical-align:middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Minha conta
+            </button>
+            <button class="menu-item" id="menuSettings" data-tab="admin" onclick="navigateTo('admin', this)" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; vertical-align:middle;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.32.13.66.19 1.01.19H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Configurações da Plataforma
             </button>
         </nav>
 
@@ -1454,11 +1631,13 @@
                         <h1>Meus gastos</h1>
                         <p>Registre novas compras e acompanhe o pagamento das parcelas.</p>
                     </div>
-                    <button type="button" class="btn-primary" onclick="abrirModalGasto()" style="margin-top: 0; display: flex; align-items: center; gap: 8px; font-weight: 600; padding: 12px 20px;">
+                    <button type="button" class="btn-primary" onclick="verificarLimiteERegistrarGasto()" style="margin-top: 0; display: flex; align-items: center; gap: 8px; font-weight: 600; padding: 12px 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         Registrar novo gasto
                     </button>
                 </div>
+
+                <div id="basicLimitBanner" style="display: none; align-self: flex-start; padding: 8px 12px; border-radius: 999px; background: #eff6ff; color: #2563eb; font-size: 13px; font-weight: 700; margin-bottom: 16px;">Gastos: 0</div>
 
                 <div id="gastosList" class="gastos-grid"></div>
             </section>
@@ -1471,6 +1650,64 @@
                 </div>
 
                 <div id="historicoList" class="gastos-grid"></div>
+            </section>
+
+            <section id="tab-conta" class="section">
+                <div class="gastos-header" style="margin-bottom: 28px;">
+                    <div>
+                        <h1>Minha conta</h1>
+                        <p>Gerencie seus dados cadastrais. O login permanece bloqueado por segurança.</p>
+                    </div>
+                </div>
+
+                <div class="form-panel">
+                    <h2>Editar perfil</h2>
+                    <form id="profileForm" onsubmit="handleUpdateProfile(event)">
+                        <div class="profile-grid">
+                            <div class="form-group">
+                                <label for="profileFirstName">Nome</label>
+                                <input type="text" id="profileFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileLastName">Sobrenome</label>
+                                <input type="text" id="profileLastName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileCpf">CPF</label>
+                                <input type="text" id="profileCpf" required maxlength="14" readonly disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="profilePhone">Telefone</label>
+                                <input type="text" id="profilePhone" required maxlength="15" oninput="maskPhone(this)">
+                            </div>
+                            <div class="form-group">
+                                <label for="profileEmail">E-mail</label>
+                                <input type="email" id="profileEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileUsername">Login</label>
+                                <input type="text" id="profileUsername" readonly disabled>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Salvar alterações</button>
+                        <div class="form-error" id="profileError"></div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="tab-admin" class="section">
+                <div class="gastos-header" style="margin-bottom: 28px;">
+                    <div>
+                        <h1>Configurações da Plataforma</h1>
+                        <p>Gestão de usuários, perfis de acesso e reset de senha.</p>
+                    </div>
+                </div>
+
+                <div class="form-panel">
+                    <h2>Usuários cadastrados</h2>
+                    <div class="limit-banner" id="adminLoading">Carregando usuários...</div>
+                    <div id="adminUsersTable"></div>
+                </div>
             </section>
         </main>
     </div>
@@ -1490,6 +1727,67 @@
             </div>
         </div>
         <button type="button" class="gefinho-toggle" onclick="toggleGeFinho()">GeFinho</button>
+    </div>
+
+    <!-- Admin User Modal -->
+    <div id="adminUserModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 620px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0;">Editar usuário</h3>
+                <button type="button" class="gefinho-close" onclick="fecharAdminUserModal()" style="color: #64748b;">×</button>
+            </div>
+            <form id="adminUserForm" onsubmit="handleAdminUserUpdate(event)">
+                <input type="hidden" id="adminUserId">
+                <div class="profile-grid">
+                    <div class="form-group">
+                        <label for="adminFirstName">Nome</label>
+                        <input type="text" id="adminFirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminLastName">Sobrenome</label>
+                        <input type="text" id="adminLastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminCpf">CPF</label>
+                        <input type="text" id="adminCpf" required maxlength="14" oninput="maskCpf(this)">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPhone">Telefone</label>
+                        <input type="text" id="adminPhone" required maxlength="15" oninput="maskPhone(this)">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminEmail">E-mail</label>
+                        <input type="email" id="adminEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminRole">Perfil de acesso</label>
+                        <select id="adminRole" required style="width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; background: #fff; color: #0f172a;">
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="BASIC">BASIC</option>
+                            <option value="PREMIUM">PREMIUM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="fecharAdminUserModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+                <div class="form-error" id="adminUserError"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Upsell Modal -->
+    <div id="upsellModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 520px; text-align: center;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 28px; font-weight: 800;">★</div>
+            <h3 class="modal-title" style="margin-bottom: 10px;">Você atingiu o limite do plano atual</h3>
+            <p class="modal-description" id="upsellMessage" style="margin-bottom: 20px;">Para continuar registrando gastos sem limites, faça upgrade para o Perfil Premium.</p>
+            <div class="modal-buttons" style="justify-content: center; gap: 10px;">
+                <button type="button" class="btn-modal cancel" onclick="fecharUpsellModal()">Continuar no plano atual</button>
+                <button type="button" class="btn-modal confirm" onclick="solicitarUpgrade()" style="background: #2563eb;">Fazer upgrade para Premium</button>
+            </div>
+        </div>
     </div>
 
     <!-- Confirmation Modal -->
@@ -1974,6 +2272,8 @@
                     desenharGraficos();
                 }
             }
+
+            atualizarContadorBasic();
         }
 
         function renderGastos(gastos) {
@@ -1993,7 +2293,7 @@
                         <span style="font-size: 40px; margin-bottom: 12px; display: block;">📂</span>
                         <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">Nenhum gasto em aberto</h3>
                         <p style="color: #64748b; font-size: 14px; max-width: 325px; line-height: 1.5; margin: 0 auto 20px auto;">Você não possui nenhum gasto pendente no momento. Registre uma nova compra parcelada!</p>
-                        <button type="button" class="btn-primary" onclick="abrirModalGasto()" style="margin-top: 0; padding: 10px 20px; font-weight: 600;">Registrar gasto</button>
+                        <button type="button" class="btn-primary" onclick="verificarLimiteERegistrarGasto()" style="margin-top: 0; padding: 10px 20px; font-weight: 600;">Registrar gasto</button>
                     </div>
                 `;
             } else {
@@ -2012,6 +2312,8 @@
             } else {
                 containerHistorico.innerHTML = quitados.map(g => renderGastoCard(g)).join('');
             }
+
+            atualizarContadorBasic();
         }
 
         function renderGastoCard(gasto) {
@@ -2119,6 +2421,15 @@
             fecharModalDeletar();
         }
 
+        function verificarLimiteERegistrarGasto() {
+            if (currentUser && currentUser.role === 'BASIC' && cacheGastos.filter(gasto => gasto.statusPagamento !== 'Quitado').length >= 10) {
+                mostrarUpsellModal();
+                return;
+            }
+
+            abrirModalGasto();
+        }
+
         function abrirModalGasto() {
             document.getElementById('gastoError').style.display = 'none';
             document.getElementById('gastoModal').classList.add('visible');
@@ -2159,12 +2470,770 @@
 
             const token = localStorage.getItem('authToken');
             if (token) {
-                loginScreen.style.display = 'none';
-                appShell.classList.add('visible');
-                atualizarPerfilSidebar();
-                carregarResumo();
+                loadDashboard();
             }
         });
+        let currentUser = null;
+        let currentRegisterStep = 1;
+
+        function showLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            showRegisterStep1();
+        }
+
+        function showRegisterStep1() {
+            currentRegisterStep = 1;
+            document.getElementById('registerStep1').classList.add('active');
+            document.getElementById('registerStep2').classList.remove('active');
+            document.getElementById('registerStep1Error').style.display = 'none';
+            document.getElementById('registerStep2Error').style.display = 'none';
+        }
+
+        function goRegisterStep2() {
+            if (!validateRegisterStep1()) return;
+            currentRegisterStep = 2;
+            document.getElementById('registerStep1').classList.remove('active');
+            document.getElementById('registerStep2').classList.add('active');
+            document.getElementById('registerStep2Error').style.display = 'none';
+            validatePasswordFrontend();
+        }
+
+        function maskCpf(input) {
+            let value = input.value.replace(/\D/g, '').slice(0, 11);
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            input.value = value;
+        }
+
+        function maskPhone(input) {
+            let value = input.value.replace(/\D/g, '').slice(0, 11);
+            value = value.replace(/^(\d{2})(\d)/, '($1) $2');
+            value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+            input.value = value;
+        }
+
+        function digitsOnly(value) {
+            return value ? value.replace(/\D/g, '') : '';
+        }
+
+        function isValidCpf(cpf) {
+            const digits = digitsOnly(cpf);
+            if (digits.length !== 11 || /^(\d)\1+$/.test(digits)) return false;
+            let sum = 0;
+            for (let i = 0; i < 9; i++) sum += parseInt(digits.charAt(i)) * (10 - i);
+            let first = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+            sum = 0;
+            for (let i = 0; i < 10; i++) sum += parseInt(digits.charAt(i)) * (11 - i);
+            let second = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+            return parseInt(digits.charAt(9)) === first && parseInt(digits.charAt(10)) === second;
+        }
+
+        function isValidPhone(phone) {
+            const digits = digitsOnly(phone);
+            return digits.length >= 10 && digits.length <= 11;
+        }
+
+        function isValidEmail(email) {
+            return /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
+        }
+
+        function validateRegisterStep1() {
+            const firstName = document.getElementById('registerFirstName').value.trim();
+            const lastName = document.getElementById('registerLastName').value.trim();
+            const cpf = document.getElementById('registerCpf').value;
+            const phone = document.getElementById('registerPhone').value;
+            const email = document.getElementById('registerEmail').value.trim();
+            const errorEl = document.getElementById('registerStep1Error');
+
+            if (!firstName || !lastName) {
+                errorEl.textContent = 'Nome e sobrenome são obrigatórios.';
+                errorEl.style.display = 'block';
+                return false;
+            }
+            if (!isValidCpf(cpf)) {
+                errorEl.textContent = 'Informe um CPF válido.';
+                errorEl.style.display = 'block';
+                return false;
+            }
+            if (!isValidPhone(phone)) {
+                errorEl.textContent = 'Informe um telefone válido.';
+                errorEl.style.display = 'block';
+                return false;
+            }
+            if (!isValidEmail(email)) {
+                errorEl.textContent = 'Informe um e-mail válido.';
+                errorEl.style.display = 'block';
+                return false;
+            }
+
+            errorEl.style.display = 'none';
+            return true;
+        }
+
+        function getPasswordViolations() {
+            const password = document.getElementById('registerPassword').value;
+            const firstName = normalizeFrontendText(document.getElementById('registerFirstName').value.trim());
+            const lastName = normalizeFrontendText(document.getElementById('registerLastName').value.trim());
+            const normalizedPassword = normalizeFrontendText(password);
+            const violations = [];
+
+            if (password.length < 8) violations.push('A senha deve conter no mínimo 8 caracteres.');
+            if (!/[a-z]/.test(password)) violations.push('A senha deve conter pelo menos uma letra minúscula.');
+            if (!/[A-Z]/.test(password)) violations.push('A senha deve conter pelo menos uma letra maiúscula.');
+            if (!/\d/.test(password)) violations.push('A senha deve conter pelo menos um número.');
+            if (!/[^A-Za-z0-9]/.test(password)) violations.push('A senha deve conter pelo menos um caractere especial.');
+            if (firstName.length >= 3 && normalizedPassword.includes(firstName)) violations.push('A senha não pode conter o nome informado.');
+            if (lastName.length >= 3 && normalizedPassword.includes(lastName)) violations.push('A senha não pode conter o sobrenome informado.');
+            if (/\d{4}/.test(password)) {
+                const match = password.match(/\d{4}/);
+                const year = parseInt(match[0]);
+                if (year >= 1900 && year <= 2999) violations.push('A senha não pode conter uma sequência de 4 dígitos que represente um ano.');
+            }
+
+            return violations;
+        }
+
+        function validatePasswordFrontend() {
+            const violations = getPasswordViolations();
+            const rules = document.getElementById('passwordRules');
+            const list = document.getElementById('passwordRulesList');
+            list.innerHTML = '';
+            violations.forEach(violation => {
+                const item = document.createElement('li');
+                item.textContent = violation;
+                list.appendChild(item);
+            });
+            rules.style.display = violations.length ? 'block' : 'none';
+            return violations.length === 0;
+        }
+
+        function normalizeFrontendText(value) {
+            return String(value || '')
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]/g, '');
+        }
+
+        function validateRegisterStep2() {
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const errorEl = document.getElementById('registerStep2Error');
+
+            if (username.length < 3) {
+                errorEl.textContent = 'Login deve conter no mínimo 3 caracteres.';
+                errorEl.style.display = 'block';
+                return false;
+            }
+            if (!/^[a-zA-Z0-9_.-]+$/.test(username)) {
+                errorEl.textContent = 'Login deve usar apenas letras, números, ponto, underline ou hífen.';
+                errorEl.style.display = 'block';
+                return false;
+            }
+            if (!validatePasswordFrontend()) {
+                errorEl.textContent = 'Ajuste a senha conforme as regras exibidas.';
+                errorEl.style.display = 'block';
+                return false;
+            }
+
+            errorEl.style.display = 'none';
+            return true;
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            if (!validateRegisterStep2()) return;
+
+            const errorEl = document.getElementById('registerStep2Error');
+            errorEl.style.display = 'none';
+
+            const payload = {
+                firstName: document.getElementById('registerFirstName').value.trim(),
+                lastName: document.getElementById('registerLastName').value.trim(),
+                cpf: document.getElementById('registerCpf').value,
+                phone: document.getElementById('registerPhone').value,
+                email: document.getElementById('registerEmail').value.trim(),
+                username: document.getElementById('registerUsername').value.trim(),
+                password: document.getElementById('registerPassword').value
+            };
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('registerForm').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'block';
+                    document.getElementById('username').value = payload.username;
+                    document.getElementById('registerPassword').value = '';
+                    errorEl.textContent = 'Cadastro realizado com sucesso. Agora faça login com suas novas credenciais.';
+                    errorEl.style.background = '#ecfdf5';
+                    errorEl.style.borderColor = '#a7f3d0';
+                    errorEl.style.color = '#047857';
+                    errorEl.style.display = 'block';
+                } else {
+                    errorEl.textContent = data.message || data.error || 'Não foi possível criar a conta.';
+                    errorEl.style.display = 'block';
+                }
+            } catch (err) {
+                errorEl.textContent = 'Erro ao conectar com o servidor';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        function setAuth(data) {
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('username', data.username);
+            localStorage.setItem('fullName', data.fullName);
+            if (data.role) localStorage.setItem('role', data.role);
+        }
+
+        function showAppShell() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appShell').classList.add('visible');
+        }
+
+        async function loadCurrentUser() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return null;
+
+            try {
+                const response = await fetch('/api/dashboard/profile', {
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (response.ok) {
+                    currentUser = await response.json();
+                    localStorage.setItem('role', currentUser.role);
+                    atualizarPerfilSidebar();
+                    applyRoleBasedMenu();
+                    renderProfileForm();
+                    return currentUser;
+                }
+            } catch (err) {}
+            return null;
+        }
+
+        function atualizarPerfilSidebar() {
+            const fullName = currentUser ? currentUser.fullName : localStorage.getItem('fullName') || 'Usuário';
+            const username = currentUser ? currentUser.username : localStorage.getItem('username') || 'usuario';
+            const role = currentUser ? currentUser.role : localStorage.getItem('role') || 'BASIC';
+            document.getElementById('userFullName').textContent = fullName;
+            document.getElementById('userUsername').textContent = '@' + username;
+            document.getElementById('userRole').textContent = role;
+        }
+
+        function applyRoleBasedMenu() {
+            const role = currentUser ? currentUser.role : localStorage.getItem('role') || 'BASIC';
+            const settings = document.getElementById('menuSettings');
+            settings.style.display = role === 'ADMIN' ? 'flex' : 'none';
+            atualizarContadorBasic();
+        }
+
+        function atualizarContadorBasic() {
+            const counter = document.getElementById('basicLimitBanner');
+            if (!counter) return;
+            const role = currentUser ? currentUser.role : localStorage.getItem('role') || 'BASIC';
+            const total = cacheGastos ? cacheGastos.filter(gasto => gasto.statusPagamento !== 'Quitado').length : 0;
+            counter.textContent = role === 'BASIC' ? `Gastos: ${total}` : '';
+            counter.style.display = role === 'BASIC' ? 'block' : 'none';
+        }
+
+        function mostrarUpsellModal() {
+            document.getElementById('upsellMessage').textContent = 'Você atingiu o limite da sua capacidade de registros no plano atual. Faça upgrade para o Perfil Premium e registre gastos sem limites.';
+            document.getElementById('upsellModal').classList.add('visible');
+        }
+
+        function fecharUpsellModal() {
+            document.getElementById('upsellModal').classList.remove('visible');
+        }
+
+        function solicitarUpgrade() {
+            alert('Upgrade para Premium solicitado. Em produção, este botão abriria o fluxo de pagamento ou contato comercial.');
+        }
+
+        function renderProfileForm() {
+            if (!currentUser) return;
+            document.getElementById('profileFirstName').value = currentUser.firstName || '';
+            document.getElementById('profileLastName').value = currentUser.lastName || '';
+            document.getElementById('profileCpf').value = currentUser.cpf || '';
+            document.getElementById('profilePhone').value = currentUser.phone || '';
+            document.getElementById('profileEmail').value = currentUser.email || '';
+            document.getElementById('profileUsername').value = currentUser.username || '';
+        }
+
+        async function handleUpdateProfile(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('authToken');
+            const errorEl = document.getElementById('profileError');
+            errorEl.style.display = 'none';
+
+            if (!isValidCpf(document.getElementById('profileCpf').value) || !isValidPhone(document.getElementById('profilePhone').value) || !isValidEmail(document.getElementById('profileEmail').value)) {
+                errorEl.textContent = 'Verifique CPF, telefone e e-mail.';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            const payload = {
+                firstName: document.getElementById('profileFirstName').value.trim(),
+                lastName: document.getElementById('profileLastName').value.trim(),
+                cpf: document.getElementById('profileCpf').value,
+                phone: document.getElementById('profilePhone').value,
+                email: document.getElementById('profileEmail').value.trim()
+            };
+
+            try {
+                const response = await fetch('/api/dashboard/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    currentUser = data;
+                    localStorage.setItem('fullName', data.fullName);
+                    atualizarPerfilSidebar();
+                    errorEl.textContent = 'Perfil atualizado com sucesso.';
+                    errorEl.style.display = 'block';
+                    errorEl.style.background = '#ecfdf5';
+                    errorEl.style.borderColor = '#a7f3d0';
+                    errorEl.style.color = '#047857';
+                } else {
+                    errorEl.textContent = data.error || 'Erro ao atualizar perfil.';
+                    errorEl.style.display = 'block';
+                }
+            } catch (err) {
+                errorEl.textContent = 'Erro ao conectar com o servidor';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        async function loadAdminUsers() {
+            const token = localStorage.getItem('authToken');
+            const loading = document.getElementById('adminLoading');
+            loading.style.display = 'block';
+            loading.textContent = 'Carregando usuários...';
+
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (response.ok) {
+                    const users = await response.json();
+                    renderAdminUsers(users);
+                    loading.style.display = 'none';
+                } else {
+                    const data = await response.json();
+                    loading.textContent = data.error || 'Erro ao carregar usuários.';
+                }
+            } catch (err) {
+                loading.textContent = 'Erro ao conectar com o servidor.';
+            }
+        }
+
+        function renderAdminUsers(users) {
+            const container = document.getElementById('adminUsersTable');
+            container.innerHTML = `
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>CPF</th>
+                            <th>Perfil</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(user => `
+                            <tr>
+                                <td>${escapeHtml(user.username)}</td>
+                                <td>${escapeHtml(user.fullName)}</td>
+                                <td>${escapeHtml(user.email)}</td>
+                                <td>${escapeHtml(user.cpf)}</td>
+                                <td><span class="role-badge">${escapeHtml(user.role)}</span></td>
+                                <td>
+                                    <button type="button" class="btn-action" onclick="editarUsuario(${user.id})">Editar</button>
+                                    <select class="btn-action" onchange="atualizarRole(${user.id}, this.value)" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                        <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
+                                        <option value="BASIC" ${user.role === 'BASIC' ? 'selected' : ''}>BASIC</option>
+                                        <option value="PREMIUM" ${user.role === 'PREMIUM' ? 'selected' : ''}>PREMIUM</option>
+                                    </select>
+                                    <input type="password" id="resetPassword-${user.id}" placeholder="Nova senha" style="width: 130px; padding: 7px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                    <button type="button" class="btn-action danger" onclick="resetarSenha(${user.id})">Reset</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function editarUsuario(user) {
+            document.getElementById('adminUserId').value = user.id;
+            document.getElementById('adminFirstName').value = user.firstName || '';
+            document.getElementById('adminLastName').value = user.lastName || '';
+            document.getElementById('adminCpf').value = user.cpf || '';
+            document.getElementById('adminPhone').value = user.phone || '';
+            document.getElementById('adminEmail').value = user.email || '';
+            document.getElementById('adminRole').value = user.role;
+            document.getElementById('adminUserError').style.display = 'none';
+            document.getElementById('adminUserModal').classList.add('visible');
+        }
+
+        function fecharAdminUserModal() {
+            document.getElementById('adminUserModal').classList.remove('visible');
+            document.getElementById('adminUserError').style.display = 'none';
+        }
+
+        async function handleAdminUserUpdate(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('authToken');
+            const id = document.getElementById('adminUserId').value;
+            const errorEl = document.getElementById('adminUserError');
+            errorEl.style.display = 'none';
+
+            const payload = {
+                firstName: document.getElementById('adminFirstName').value.trim(),
+                lastName: document.getElementById('adminLastName').value.trim(),
+                cpf: document.getElementById('adminCpf').value,
+                phone: document.getElementById('adminPhone').value,
+                email: document.getElementById('adminEmail').value.trim()
+            };
+
+            try {
+                const profileResponse = await fetch(`/api/users/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const profileData = await profileResponse.json();
+                if (!profileResponse.ok) {
+                    errorEl.textContent = profileData.error || 'Erro ao atualizar usuário.';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                const roleResponse = await fetch(`/api/users/${id}/role`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ role: document.getElementById('adminRole').value })
+                });
+                if (!roleResponse.ok) {
+                    const roleData = await roleResponse.json();
+                    errorEl.textContent = roleData.error || 'Erro ao atualizar perfil.';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                fecharAdminUserModal();
+                await loadAdminUsers();
+                await loadCurrentUser();
+            } catch (err) {
+                errorEl.textContent = 'Erro ao conectar com o servidor';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        async function atualizarRole(userId, role) {
+            const token = localStorage.getItem('authToken');
+            try {
+                const response = await fetch(`/api/users/${userId}/role`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ role })
+                });
+                if (!response.ok) {
+                    const data = await response.json();
+                    alert(data.error || 'Erro ao atualizar perfil.');
+                    await loadAdminUsers();
+                }
+                await loadCurrentUser();
+            } catch (err) {
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+
+        async function resetarSenha(userId) {
+            const token = localStorage.getItem('authToken');
+            const newPassword = document.getElementById('resetPassword-' + userId).value;
+            if (!newPassword) {
+                alert('Informe a nova senha.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/users/${userId}/reset-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ newPassword })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    alert(data.error || 'Erro ao resetar senha.');
+                    return;
+                }
+                alert('Senha resetada com sucesso.');
+                document.getElementById('resetPassword-' + userId).value = '';
+            } catch (err) {
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('error');
+
+            errorEl.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    setAuth(data);
+                    showAppShell();
+                    await loadCurrentUser();
+                    switchTab('dashboard', document.querySelector('.menu-item[data-tab="dashboard"]'));
+                    carregarResumo();
+                } else {
+                    errorEl.textContent = data.message || 'Credenciais inválidas';
+                    errorEl.style.display = 'block';
+                }
+            } catch (err) {
+                errorEl.textContent = 'Erro ao conectar com o servidor';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        async function loadDashboard() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+
+            await loadCurrentUser();
+            if (currentUser) {
+                showAppShell();
+                switchTab('dashboard', document.querySelector('.menu-item[data-tab="dashboard"]'));
+                carregarResumo();
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.clear();
+            document.getElementById('appShell').classList.remove('visible');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function navigateTo(tabId, btn) {
+            if (tabId === 'admin' && currentUser && currentUser.role !== 'ADMIN') {
+                tabId = 'dashboard';
+                btn = document.querySelector('.menu-item[data-tab="dashboard"]');
+            }
+            switchTab(tabId, btn);
+            fecharSidebar();
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            const matchedBtn = document.querySelector(`.menu-item[data-tab="${tabId}"]`);
+            if (matchedBtn) matchedBtn.classList.add('active');
+
+            atualizarContadorBasic();
+
+            if (tabId === 'gastos' || tabId === 'historico') {
+                carregarGastos();
+                carregarResumo();
+            } else if (tabId === 'dashboard') {
+                carregarResumo();
+            } else if (tabId === 'admin') {
+                loadAdminUsers();
+            } else if (tabId === 'conta') {
+                renderProfileForm();
+            }
+        }
+
+        async function handleCriarGasto(event) {
+            event.preventDefault();
+
+            const token = localStorage.getItem('authToken');
+            const titulo = document.getElementById('gastoTitulo').value;
+            const valor = parseFloat(document.getElementById('gastoValor').value);
+            const valorParcela = parseFloat(document.getElementById('gastoValorParcela').value);
+            const totalParcelas = parseInt(document.getElementById('gastoParcelas').value);
+            const dataVencimentoInicio = document.getElementById('gastoDataVencimento').value;
+            const parcelasPagas = parseInt(document.getElementById('gastoParcelasPagas').value);
+            const errorDiv = document.getElementById('gastoError');
+
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/gastos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ titulo, valor, valorParcela, totalParcelas, dataVencimentoInicio, parcelasPagas })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('gastoTitulo').value = '';
+                    document.getElementById('gastoValor').value = '';
+                    document.getElementById('gastoValorParcela').value = '';
+                    document.getElementById('gastoParcelas').value = '';
+                    document.getElementById('gastoParcelasPagas').value = '0';
+                    document.getElementById('gastoDataVencimento').value = '';
+                    fecharModalGasto();
+                    carregarGastos();
+                    carregarResumo();
+                } else {
+                    errorDiv.textContent = data.message || data.error || 'Erro ao registrar gasto';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Erro ao conectar com o servidor';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function renderGastos(gastos) {
+            const containerGastos = document.getElementById('gastosList');
+            const containerHistorico = document.getElementById('historicoList');
+
+            if (!gastos) gastos = [];
+
+            const ativos = gastos.filter(g => g.statusPagamento !== 'Quitado');
+            const quitados = gastos.filter(g => g.statusPagamento === 'Quitado');
+
+            if (ativos.length === 0) {
+                containerGastos.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1; width: 100%; display: flex; flex-direction: column; align-items: center; padding: 48px; border: 2px dashed #cbd5e1; text-align: center;">
+                        <span style="font-size: 40px; margin-bottom: 12px; display: block;">📂</span>
+                        <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">Nenhum gasto em aberto</h3>
+                        <p style="color: #64748b; font-size: 14px; max-width: 325px; line-height: 1.5; margin: 0 auto 20px auto;">Você não possui nenhum gasto pendente no momento. Registre uma nova compra parcelada!</p>
+                        <button type="button" class="btn-primary" onclick="verificarLimiteERegistrarGasto()" style="margin-top: 0; padding: 10px 20px; font-weight: 600;">Registrar gasto</button>
+                    </div>
+                `;
+            } else {
+                containerGastos.innerHTML = ativos.map(g => renderGastoCard(g)).join('');
+            }
+
+            if (quitados.length === 0) {
+                containerHistorico.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1; width: 100%; display: flex; flex-direction: column; align-items: center; padding: 48px; border: 2px dashed #cbd5e1; text-align: center;">
+                        <span style="font-size: 40px; margin-bottom: 12px; display: block;">⏳</span>
+                        <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">Histórico vazio</h3>
+                        <p style="color: #64748b; font-size: 14px; max-width: 325px; line-height: 1.5; margin: 0 auto 20px auto;">Nenhum gasto foi quitado ainda. Quando você concluir todas as parcelas de um gasto, ele virá para cá!</p>
+                    </div>
+                `;
+            } else {
+                containerHistorico.innerHTML = quitados.map(g => renderGastoCard(g)).join('');
+            }
+
+            atualizarContadorBasic();
+        }
+
+        function renderGastoCard(gasto) {
+            const isQuitado = gasto.statusPagamento === 'Quitado';
+            return `
+                <div class="gasto-card">
+                    <div class="gasto-head">
+                        <div>
+                            <h3 style="margin: 0; line-height: 1.2;">${escapeHtml(gasto.titulo)}</h3>
+                            <span class="status-badge ${escapeHtml(gasto.statusPagamento.toLowerCase().replace(' ', '-'))}">${escapeHtml(gasto.statusPagamento)}</span>
+                        </div>
+                        <span class="gasto-head-amount">R$ ${formatarValor(gasto.valor)}</span>
+                    </div>
+                    <div class="gasto-body">
+                        <div class="gasto-row">
+                            <span>Parcelas: <strong>${gasto.parcelasPagas}/${gasto.totalParcelas}</strong></span>
+                            <span>Restam: <strong>${gasto.parcelasRestantes}</strong></span>
+                        </div>
+                        <div class="gasto-row" style="margin-top: -4px;">
+                            <span>Valor parcela: <strong>R$ ${formatarValor(gasto.valorParcela)}</strong></span>
+                            <span>Equiv. Juros: <strong style="${gasto.percentualJuros > 0 ? 'color: #e11d48;' : ''}">${gasto.percentualJuros !== null && gasto.percentualJuros !== undefined ? formatarValor(gasto.percentualJuros) : '0,00'}%</strong></span>
+                        </div>
+                        <div class="gasto-row" style="margin-top: -4px;">
+                            <span>Início: <strong>${formatarData(gasto.dataVencimentoInicio)}</strong></span>
+                            <span>Final: <strong>${formatarData(gasto.dataVencimentoFim)}</strong></span>
+                        </div>
+                        <div class="gasto-progress">
+                            <div class="progress-track">
+                                <div class="progress-bar" style="width: ${gasto.percentualPago}%"></div>
+                            </div>
+                            <div class="progress-text">${gasto.percentualPago.toFixed(1)}% pago</div>
+                        </div>
+                        <div class="gasto-footer">
+                            <span class="paid">Pago: R$ ${formatarValor(gasto.valorPago)}</span>
+                            <span class="due">Devedor: R$ ${formatarValor(gasto.valorRestante)}</span>
+                        </div>
+                    </div>
+                    <div class="gasto-actions" style="display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap;">
+                        <div style="display: flex; gap: 8px;">
+                            ${!isQuitado ? `<button class="btn-action mark" onclick="atualizarParcelas(${gasto.id}, ${gasto.parcelasPagas + 1})">Pagar Parcela</button>` : ''}
+                            ${gasto.parcelasPagas > 0 ? `<button class="btn-action revert" style="background: #e2e8f0; color: #475569;" onclick="reverterParcela(${gasto.id})">Estornar</button>` : ''}
+                        </div>
+                        <button class="btn-action danger" onclick="deletarGasto(${gasto.id})">Excluir</button>
+                    </div>
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>

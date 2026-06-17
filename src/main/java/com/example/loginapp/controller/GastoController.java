@@ -1,8 +1,10 @@
 package com.example.loginapp.controller;
 
 import com.example.loginapp.exception.BadRequestException;
+import com.example.loginapp.exception.ForbiddenException;
 import com.example.loginapp.exception.ResourceNotFoundException;
 import com.example.loginapp.model.User;
+import com.example.loginapp.model.UserRole;
 import com.example.loginapp.model.dto.CreateGastoRequest;
 import com.example.loginapp.model.dto.GastoResponse;
 import com.example.loginapp.model.dto.GastoSummaryResponse;
@@ -81,22 +83,36 @@ public class GastoController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        GastoResponse gasto = gastoService.criarGasto(userId, request);
+        try {
+            User user = userRepository.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+            GastoResponse gasto = gastoService.criarGasto(user.getId(), request, user.getRole());
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Gasto criado com sucesso");
-        response.put("gasto", gasto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Gasto criado com sucesso");
+            response.put("gasto", gasto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (ForbiddenException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        } catch (ResourceNotFoundException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 
     @PutMapping("/{id}/parcelas")
     public ResponseEntity<Map<String, Object>> atualizarParcelasPagas(
+            Authentication authentication,
             @PathVariable Long id,
             @RequestBody Map<String, Integer> body) {
+        Long userId = getUserIdFromAuthentication(authentication);
         Integer parcelasPagas = body.get("parcelasPagas");
 
         try {
-            GastoResponse gasto = gastoService.atualizarParcelasPagas(id, parcelasPagas);
+            GastoResponse gasto = gastoService.atualizarParcelasPagas(userId, id, parcelasPagas);
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Parcelas atualizadas com sucesso");
@@ -114,9 +130,13 @@ public class GastoController {
     }
 
     @PostMapping("/{id}/desmarcar-parcela")
-    public ResponseEntity<Map<String, Object>> desmarcarParcela(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> desmarcarParcela(
+            Authentication authentication,
+            @PathVariable Long id) {
+        Long userId = getUserIdFromAuthentication(authentication);
+
         try {
-            GastoResponse gasto = gastoService.desmarcarParcela(id);
+            GastoResponse gasto = gastoService.desmarcarParcela(userId, id);
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Parcela desmarcada com sucesso");
@@ -130,12 +150,22 @@ public class GastoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deletarGasto(@PathVariable Long id) {
-        gastoService.deletarGasto(id);
+    public ResponseEntity<Map<String, String>> deletarGasto(
+            Authentication authentication,
+            @PathVariable Long id) {
+        Long userId = getUserIdFromAuthentication(authentication);
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Gasto deletado com sucesso");
-        return ResponseEntity.ok(response);
+        try {
+            gastoService.deletarGasto(userId, id);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Gasto deletado com sucesso");
+            return ResponseEntity.ok(response);
+        } catch (ResourceNotFoundException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 }
 

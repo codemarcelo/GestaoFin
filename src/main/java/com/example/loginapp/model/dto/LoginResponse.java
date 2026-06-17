@@ -4,14 +4,20 @@ public class LoginResponse {
     private String token;
     private String username;
     private String fullName;
+    private String role;
     private String message;
 
     public LoginResponse() {}
 
     public LoginResponse(String token, String username, String fullName, String message) {
+        this(token, username, fullName, "BASIC", message);
+    }
+
+    public LoginResponse(String token, String username, String fullName, String role, String message) {
         this.token = token;
         this.username = username;
         this.fullName = fullName;
+        this.role = role;
         this.message = message;
     }
 
@@ -37,6 +43,14 @@ public class LoginResponse {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getMessage() {
